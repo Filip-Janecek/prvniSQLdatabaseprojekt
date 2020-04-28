@@ -1,6 +1,7 @@
 const getDbConnection = require("./db-mysql").getConnection;
 //let t;
 let test;
+let editaceId;
 
 exports.apiDb = function (req, res, obj) {
     let connection = getDbConnection();
@@ -39,6 +40,22 @@ exports.apiDb = function (req, res, obj) {
                 res.end(JSON.stringify(obj));
             }
         );
+    } else if (req.pathname.endsWith("/detailStudenta")) {
+        editaceId = req.parameters.id;
+
+        let qry = "SELECT * FROM spaserverexample_studenti WHERE id=" + editaceId;
+        connection.query(qry,
+            function(err, rows){
+                if (err) {
+                    console.error(JSON.stringify({status: "Error", error: err}));
+                    obj.error = JSON.stringify(err);
+                } else {
+                    obj.student = rows[0];
+                    //delete(obj.student.jmeno);
+                }
+                res.end(JSON.stringify(obj));
+            }
+        );
     } else if (req.pathname.endsWith("/smazStudenta")) {
 //        let qry = "DELETE FROM spaserverexample_studenti WHERE id="+req.parameters.id;
         let qry = "UPDATE spaserverexample_studenti SET stav = '2' WHERE id="+req.parameters.id;
@@ -66,6 +83,26 @@ exports.apiDb = function (req, res, obj) {
                     obj.error = JSON.stringify(err);
                 } else {
                 }
+                res.end(JSON.stringify(obj));
+            }
+        );
+    } else if (req.pathname.endsWith("/ulozStudenta")) {
+        let jmeno = req.parameters.jmeno;
+        let pprijmeni = req.parameters.prijmeni;
+        let cislo = req.parameters.cislo;
+        let trida = req.parameters.trida;
+
+        //let qry = "UPDATE FROM spaserverexample_studenti  SET tridy_id='"+t+"', jmeno='"+j+"', prijmeni='"+p+"', cislo_podle_tridnice='"+c+"' WHERE id="+req.parameters.id;
+        let qry = "UPDATE spaserverexample_studenti SET tridy_id='"+trida+"', jmeno='"+jmeno+"', prijmeni='"+pprijmeni+"', cislo_podle_tridnice='"+cislo+"' WHERE id="+ editaceId;
+
+        connection.query(qry,
+            function(err, rows){
+                if (err) {
+                    console.error(JSON.stringify({status: "Error", error: err}));
+                    obj.error = JSON.stringify(err);
+                } else {
+                }
+
                 res.end(JSON.stringify(obj));
             }
         );

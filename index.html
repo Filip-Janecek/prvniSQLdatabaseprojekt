@@ -5,7 +5,6 @@
     <title>Příklad použití modulu spaserver</title>
     <script>
         const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
-
         /*  function ukazChybu(e) {
               console.error('Error:', e.toString());
               let s;
@@ -189,6 +188,45 @@
             });
         }
 
+        function editujStudenta(id) {
+            let url = `${HOST}/db/detailStudenta?id=${id}`;
+            fetch(url).then(function (response) {
+                response.text().then(function (text) {
+                    let obj = JSON.parse(text);
+                    if (obj.error) {
+                        document.getElementById("div_studenti").innerHTML = obj.error;
+                    } else {
+                        document.getElementById("edit-krestni").value = obj.student.jmeno;
+                        document.getElementById("edit-prijmeni").value = obj.student.prijmeni;
+                        document.getElementById("edit-cislotridnice").value = obj.student.cislo_podle_tridnice;
+                        document.getElementById("edit-trida").value = obj.student.tridy_id;
+                    }
+                }).catch((error) => {
+                    ukazChybu(error);
+                });
+            });
+        }
+
+        function ulozStudenta() {
+            let krestni = document.getElementById("edit-krestni").value;
+            let prijmeni = document.getElementById("edit-prijmeni").value;
+            let trida = document.getElementById("edit-trida").value;
+            let cislotridnice = document.getElementById("edit-cislotridnice").value;
+            let url = `${HOST}/db/ulozStudenta?jmeno=${krestni}&prijmeni=${prijmeni}&trida=${trida}&cislo=${cislotridnice} `;
+            fetch(url).then(function (response) {
+                response.text().then(function (text) {
+                    let obj = JSON.parse(text);
+                    if (obj.error) {
+                        document.getElementById("div_studenti").innerHTML = obj.error;
+                    } else {
+                        dbStudenti();
+                    }
+                }).catch((error) => {
+                    ukazChybu(error);
+                });
+            });
+
+        }
         /* function zkopirujStudenta() {
              let krestni = document.getElementById("krestni").value;
              let prijmeni = document.getElementById("prijmeni").value;
@@ -237,7 +275,9 @@
                     } else {
                         let s = ``;
                         for (let st of obj.studenti) {
-                            s += `[<a href="JavaScript:smazStudenta(${st.id})">X</a>] ${st.prijmeni} ${st.jmeno} (${st.rocnik}.${st.oznaceni_tridy}) ${st.cislo_podle_tridnice}<br>`;
+                            s += `[<a href="JavaScript:smazStudenta(${st.id})">X</a>]
+                                    [<a href="JavaScript:editujStudenta(${st.id})">U</a>] ${st.prijmeni} ${st.jmeno}
+                                    (${st.rocnik}.${st.oznaceni_tridy}) ${st.cislo_podle_tridnice}<br>`;
                         }
                         document.getElementById("div_studenti").innerHTML = s;
                     }
@@ -263,8 +303,6 @@ dne <input type="date" id="datum2" onchange="ukazDen2()"> byl(a/o)/bude <span id
 
 <h2>Příklad použití MySQL - školní třídy a studenti</h2>
 
-<div id="div_tridy"><input type="button" value="Načti třídy" onclick="dbTridy()"></div>
-<div id="div_studenti"></div>
 <h1>Student input</h1>
 <input type="button" value="zkopírovat studenta" onclick="zkopirujStudenta()">
 <input type="text" value="Křestní jméno" id="krestni">
@@ -279,5 +317,20 @@ tridy-id<!-- <input type="number" id="tridy-id" value="5" onchange="dbStudenti()
 <div id="test">...</div>
 <div id="testII">....</div>
 <input type="button" value="změň číslo v třídnici" onclick="cisloTridnice()">
+<h1>Editace studenta</h1>
+<input type="text"  id="edit-krestni" value="Křestní jméno">
+<input type="text" id="edit-prijmeni" value="Příjmení">
+třída:<input type="number" id="edit-trida">
+číslo třídnice:<input type="number" id="edit-cislotridnice">
+<input type="submit" onclick="ulozStudenta()" value="Uložit"><br><br>
+<br>
+<br>
+<br>
+
+
+
+<div id="div_tridy"><input type="button" value="Načti třídy" onclick="dbTridy()"></div>
+<div id="div_studenti"></div><br><br>
+
 </body>
 </html>
